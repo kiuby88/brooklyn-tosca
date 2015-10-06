@@ -1,4 +1,4 @@
-package org.apache.brooklyn.tosca.a4c.brooklyn;
+package org.apache.brooklyn.tosca.a4c.platform.transformer.converters;
 
 import java.util.Map;
 

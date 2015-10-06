@@ -1,10 +1,11 @@
-package org.apache.brooklyn.tosca.a4c.brooklyn;
+package org.apache.brooklyn.tosca.a4c.platform.transformer;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.brooklyn.api.catalog.CatalogItem;
 import org.apache.brooklyn.api.entity.Application;
+import org.apache.brooklyn.api.entity.Entity;
 import org.apache.brooklyn.api.entity.EntitySpec;
 import org.apache.brooklyn.api.internal.AbstractBrooklynObjectSpec;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
@@ -17,7 +18,9 @@ import org.apache.brooklyn.entity.software.base.SoftwareProcess;
 import org.apache.brooklyn.entity.software.base.SoftwareProcess.ChildStartableMode;
 import org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess;
 import org.apache.brooklyn.entity.stock.BasicApplication;
-import org.apache.brooklyn.tosca.a4c.Alien4CloudToscaPlatform;
+import org.apache.brooklyn.tosca.a4c.platform.Alien4CloudToscaPlatform;
+import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaComputeToVanillaConverter;
+import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaTomcatServerConverter;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.core.ResourceUtils;
 import org.apache.brooklyn.util.exceptions.Exceptions;
@@ -64,7 +67,7 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
                     Alien4CloudToscaPlatform.grantAdminAuth();
                     platform = Alien4CloudToscaPlatform.newInstance();
                     ((LocalManagementContext)mgmt).getBrooklynProperties().put(TOSCA_ALIEN_PLATFORM, platform);
-                    platform.loadNormativeTypes();
+                    platform.loadNodeTypes();
                 }
             }
         } catch (Exception e) {
@@ -178,6 +181,7 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
         Map<String,EntitySpec<?>> allNodeSpecs = MutableMap.of();
         Map<String,EntitySpec<?>> topLevelNodeSpecs = MutableMap.of();
         Map<String,NodeTemplate> otherNodes = MutableMap.of();
+
         for (Entry<String,NodeTemplate> templateE: topo.getNodeTemplates().entrySet()) {
             String templateId = templateE.getKey();
             NodeTemplate template = templateE.getValue();
@@ -198,7 +202,18 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
                 String templateId = templateE.getKey();
                 NodeTemplate template = templateE.getValue();
 
-                EntitySpec<VanillaSoftwareProcess> thisNode = new ToscaComputeToVanillaConverter(mgmt).toSpec(templateId, template);
+                EntitySpec<? extends Entity> thisNode;
+                if ("tosca.nodes.Compute".equals(template.getType())) {
+
+                    thisNode = new ToscaComputeToVanillaConverter(mgmt).toSpec(templateId, template);
+                }
+                else if("tosca.nodes.tomcat".equals(template.getType())) {
+                    thisNode = new ToscaTomcatServerConverter(mgmt).toSpec(templateId, template);
+                }
+                else {
+                    //tosca.nodes.Software...
+                    thisNode = new ToscaComputeToVanillaConverter(mgmt).toSpec(templateId, template);
+                }
 
                 String hostNodeId = null;
                 Requirement hostR = template.getRequirements()==null ? null : template.getRequirements().get("host");
