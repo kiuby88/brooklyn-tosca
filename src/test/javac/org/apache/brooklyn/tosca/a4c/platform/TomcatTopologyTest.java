@@ -13,7 +13,7 @@ import static org.testng.Assert.assertNull;
 
 public class TomcatTopologyTest extends AbstractAlien4CloudToscaPlatformTest{
 
-    String TEMPLATE ="templates/simpleTomcatTemplate.yaml";
+    String TEMPLATE ="templates/tomcat-template.yaml";
     String TOMCAT_SERVER_TYPE= "tosca.nodes.Tomcat";
     String TOMCAT_NODE= "tomcat_server";
 
@@ -32,7 +32,6 @@ public class TomcatTopologyTest extends AbstractAlien4CloudToscaPlatformTest{
         assertEquals(resolve(tomcatProperties, "wars.root"), "root.war" );
         assertEquals(resolve(tomcatProperties, "http.port"), "8080+");
         assertNull(resolve(tomcatProperties, "wars.named"));
-
     }
 
 

@@ -203,7 +203,7 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
                 NodeTemplate template = templateE.getValue();
 
                 EntitySpec<? extends Entity> thisNode;
-                if ("tosca.nodes.Compute".equals(template.getType())) {
+                if ("tosca.nodes.ComputeLoc".equals(template.getType())) {
 
                     thisNode = new ToscaComputeToVanillaConverter(mgmt).toSpec(templateId, template);
                 }
