@@ -28,14 +28,16 @@ public class ComputeTopologyTest extends AbstractAlien4CloudToscaTest {
         NodeTemplate computeNode = topology.getNodeTemplates().get(COMPUTE_NODE_ID);
         assertEquals(computeNode.getType(),COMPUTE_TYPE);
 
-        Map<String, AbstractPropertyValue> tomcatProperties = computeNode.getProperties();
-        assertEquals(resolve(tomcatProperties, "num_cpus"), "1");
-        assertEquals(resolve(tomcatProperties, "mem_size"), "4 MB");
-        assertEquals(resolve(tomcatProperties, "disk_size"), "10 GB");
-        assertNull(resolve(tomcatProperties, "os_arch"));
-        assertNull(resolve(tomcatProperties, "os_type"));
-        assertNull(resolve(tomcatProperties, "os_distribution"));
-        assertNull(resolve(tomcatProperties, "os_version"));
+        Map<String, AbstractPropertyValue> computeProperties = computeNode.getProperties();
+        assertEquals(resolve(computeProperties, "num_cpus"), "1");
+        assertEquals(resolve(computeProperties, "mem_size"), "4 MB");
+        assertEquals(resolve(computeProperties, "disk_size"), "10 GB");
+        assertNull(resolve(computeProperties, "os_arch"));
+        assertNull(resolve(computeProperties, "os_type"));
+        assertNull(resolve(computeProperties, "os_distribution"));
+        assertNull(resolve(computeProperties, "os_version"));
+
+
 
     }
 }

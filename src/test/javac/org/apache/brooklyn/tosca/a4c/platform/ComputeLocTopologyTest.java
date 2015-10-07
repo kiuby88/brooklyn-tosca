@@ -25,18 +25,18 @@ public class ComputeLocTopologyTest extends AbstractAlien4CloudToscaTest {
         assertNotNull(topology);
         assertEquals(topology.getNodeTemplates().size(), 1);
 
-        NodeTemplate tomcatNode = topology.getNodeTemplates().get(COMPUTE_LOC_NODE);
-        assertEquals(tomcatNode.getType(),COMPUTE_LOC_TYPE);
+        NodeTemplate computeNode = topology.getNodeTemplates().get(COMPUTE_LOC_NODE);
+        assertEquals(computeNode.getType(),COMPUTE_LOC_TYPE);
 
-        Map<String, AbstractPropertyValue> tomcatProperties = tomcatNode.getProperties();
-        assertEquals(resolve(tomcatProperties, "location"), "aws-ec2:us-west-2");
-        assertNull(resolve(tomcatProperties, "num_cpus"));
-        assertNull(resolve(tomcatProperties, "mem_size"));
-        assertNull(resolve(tomcatProperties, "disk_size"));
-        assertNull(resolve(tomcatProperties, "os_arch"));
-        assertNull(resolve(tomcatProperties, "os_type"));
-        assertNull(resolve(tomcatProperties, "os_distribution"));
-        assertNull(resolve(tomcatProperties, "os_version"));
+        Map<String, AbstractPropertyValue> computeProperties = computeNode.getProperties();
+        assertEquals(resolve(computeProperties, "location"), "aws-ec2:us-west-2");
+        assertEquals(resolve(computeProperties, "num_cpus"), "1");
+        assertEquals(resolve(computeProperties, "mem_size"), "4 MB");
+        assertEquals(resolve(computeProperties, "disk_size"), "10 GB");
+        assertNull(resolve(computeProperties, "os_arch"));
+        assertNull(resolve(computeProperties, "os_type"));
+        assertNull(resolve(computeProperties, "os_distribution"));
+        assertNull(resolve(computeProperties, "os_version"));
 
     }
 }

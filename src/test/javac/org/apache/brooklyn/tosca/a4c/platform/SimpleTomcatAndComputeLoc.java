@@ -2,12 +2,13 @@ package org.apache.brooklyn.tosca.a4c.platform;
 
 import alien4cloud.model.topology.NodeTemplate;
 import alien4cloud.model.topology.Topology;
+import org.apache.brooklyn.tosca.a4c.AbstractAlien4CloudToscaTest;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-public class SimpleTomcatAndComputeLoc extends AbstractAlien4CloudToscaPlatformTest {
+public class SimpleTomcatAndComputeLoc extends AbstractAlien4CloudToscaTest {
 
     String TEMPLATE = "templates/tomcat-computeloc-template.yaml";
     String TOMCAT_SERVER_TYPE = "tosca.nodes.Tomcat";

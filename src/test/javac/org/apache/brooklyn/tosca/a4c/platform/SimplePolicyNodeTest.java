@@ -2,10 +2,11 @@ package org.apache.brooklyn.tosca.a4c.platform;
 
 import alien4cloud.model.topology.NodeGroup;
 import alien4cloud.model.topology.Topology;
+import org.apache.brooklyn.tosca.a4c.AbstractAlien4CloudToscaTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class SimplePolicyNodeTest extends AbstractAlien4CloudToscaPlatformTest{
+public class SimplePolicyNodeTest extends AbstractAlien4CloudToscaTest {
 
     String POLICY_TEMPLATE = "templates/simple-policy-Node.yaml";
 

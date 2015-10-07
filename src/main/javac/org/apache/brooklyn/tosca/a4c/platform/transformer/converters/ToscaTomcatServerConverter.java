@@ -1,14 +1,19 @@
 package org.apache.brooklyn.tosca.a4c.platform.transformer.converters;
 
 import alien4cloud.model.components.AbstractPropertyValue;
+import alien4cloud.model.components.ScalarPropertyValue;
 import alien4cloud.model.topology.NodeTemplate;
+import com.google.common.collect.ImmutableList;
 import org.apache.brooklyn.api.entity.EntitySpec;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
+import org.apache.brooklyn.core.location.PortRanges;
 import org.apache.brooklyn.entity.webapp.jboss.JBoss7Server;
+import org.apache.brooklyn.entity.webapp.tomcat.TomcatServer;
 import org.apache.brooklyn.util.text.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 public class ToscaTomcatServerConverter {
@@ -22,8 +27,8 @@ public class ToscaTomcatServerConverter {
         this.mgmt = mgmt;
     }
 
-    public EntitySpec<JBoss7Server> toSpec(String id, NodeTemplate t) {
-        EntitySpec<JBoss7Server> spec = EntitySpec.create(JBoss7Server.class);
+    public EntitySpec<TomcatServer> toSpec(String id, NodeTemplate t) {
+        EntitySpec<TomcatServer> spec = EntitySpec.create(TomcatServer.class);
 
         if (Strings.isNonBlank(t.getName())) {
             spec.displayName(t.getName());
@@ -34,13 +39,42 @@ public class ToscaTomcatServerConverter {
         spec.configure("tosca.node.type", t.getType());
         Map<String, AbstractPropertyValue> properties = t.getProperties();
 
-        for(Map.Entry<String, AbstractPropertyValue> entry: properties.entrySet()){
-            spec.configure(entry.getKey(), entry.getValue());
-        }
+        //for(Map.Entry<String, AbstractPropertyValue> entry: properties.entrySet()){
+        //    spec.configure(entry.getKey(), entry.getValue());
+        //}
+
+        spec.configure(TomcatServer.ROOT_WAR, resolveScalarProperty(t.getProperties(), "wars.root"));
+        spec.configure(TomcatServer.NAMED_WARS, resolveListProperty(t.getProperties(), "wars.named"));
+        spec.configure(TomcatServer.HTTP_PORT, PortRanges.fromString(resolveScalarProperty(t.getProperties(), "http.port")));
+
+
 
 
         return spec;
     }
+
+
+    public static String resolveScalarProperty(Map<String, AbstractPropertyValue> props, String ...keys) {
+        for (String key: keys) {
+            AbstractPropertyValue v = props.get(key);
+            if (v==null) continue;
+            if (v instanceof ScalarPropertyValue) return ((ScalarPropertyValue)v).getValue();
+            log.warn("Ignoring unsupported property value "+v);
+        }
+        return null;
+    }
+
+
+    public static List<String> resolveListProperty(Map<String, AbstractPropertyValue> props, String ...keys) {
+        for (String key: keys) {
+            AbstractPropertyValue v = props.get(key);
+            if (v==null) continue;
+            if (v instanceof ScalarPropertyValue) return ImmutableList.of(((ScalarPropertyValue) v).getValue());
+            log.warn("Ignoring unsupported property value "+v);
+        }
+        return null;
+    }
+
 
 
 }

@@ -19,6 +19,7 @@ import org.apache.brooklyn.entity.software.base.SoftwareProcess.ChildStartableMo
 import org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess;
 import org.apache.brooklyn.entity.stock.BasicApplication;
 import org.apache.brooklyn.tosca.a4c.platform.Alien4CloudToscaPlatform;
+import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaComputeLocToVanillaConverter;
 import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaComputeToVanillaConverter;
 import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaTomcatServerConverter;
 import org.apache.brooklyn.util.collections.MutableMap;
@@ -203,11 +204,13 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
                 NodeTemplate template = templateE.getValue();
 
                 EntitySpec<? extends Entity> thisNode;
-                if ("tosca.nodes.ComputeLoc".equals(template.getType())) {
-
+                if ("tosca.nodes.Compute".equals(template.getType())) {
                     thisNode = new ToscaComputeToVanillaConverter(mgmt).toSpec(templateId, template);
                 }
-                else if("tosca.nodes.tomcat".equals(template.getType())) {
+                else if ("tosca.nodes.ComputeLoc".equals(template.getType())) {
+                    thisNode = new ToscaComputeLocToVanillaConverter(mgmt).toSpec(templateId, template);
+                }
+                else if("tosca.nodes.Tomcat".equals(template.getType())) {
                     thisNode = new ToscaTomcatServerConverter(mgmt).toSpec(templateId, template);
                 }
                 else {
@@ -217,7 +220,7 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
 
                 String hostNodeId = null;
                 Requirement hostR = template.getRequirements()==null ? null : template.getRequirements().get("host");
-                if (hostR!=null) {
+                if ((hostR!=null) && (template.getRelationships()!=null)) {
                     for (RelationshipTemplate r: template.getRelationships().values()) {
                         if (r.getRequirementName().equals("host")) {
                             hostNodeId = r.getTarget();

@@ -1,4 +1,4 @@
-package org.apache.brooklyn.tosca.a4c.platform;
+package org.apache.brooklyn.tosca.a4c;
 
 
 import alien4cloud.model.components.AbstractPropertyValue;
@@ -9,6 +9,7 @@ import alien4cloud.tosca.parser.ParsingResult;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
 import org.apache.brooklyn.core.entity.Entities;
 import org.apache.brooklyn.core.mgmt.internal.LocalManagementContext;
+import org.apache.brooklyn.tosca.a4c.platform.Alien4CloudToscaPlatform;
 import org.apache.brooklyn.util.core.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,10 @@ import org.testng.annotations.BeforeMethod;
 
 import java.util.Map;
 
-public class AbstractAlien4CloudToscaPlatformTest {
+public class AbstractAlien4CloudToscaTest {
 
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractAlien4CloudToscaPlatformTest.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractAlien4CloudToscaTest.class);
 
     private ManagementContext mgmt;
 
@@ -41,6 +42,10 @@ public class AbstractAlien4CloudToscaPlatformTest {
 
     public Alien4CloudToscaPlatform getPlatform(){
         return platform;
+    }
+
+    public ManagementContext getMgmt(){
+        return mgmt;
     }
 
     public String getClasspathUrlForResource(String resourceName){
