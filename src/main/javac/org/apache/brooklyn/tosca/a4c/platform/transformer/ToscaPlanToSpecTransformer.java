@@ -1,5 +1,6 @@
 package org.apache.brooklyn.tosca.a4c.platform.transformer;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,6 +23,7 @@ import org.apache.brooklyn.tosca.a4c.platform.Alien4CloudToscaPlatform;
 import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaComputeLocToVanillaConverter;
 import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaComputeToVanillaConverter;
 import org.apache.brooklyn.tosca.a4c.platform.transformer.converters.ToscaTomcatServerConverter;
+import org.apache.brooklyn.util.collections.MutableList;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.core.ResourceUtils;
 import org.apache.brooklyn.util.exceptions.Exceptions;
@@ -182,6 +184,7 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
         Map<String,EntitySpec<?>> allNodeSpecs = MutableMap.of();
         Map<String,EntitySpec<?>> topLevelNodeSpecs = MutableMap.of();
         Map<String,NodeTemplate> otherNodes = MutableMap.of();
+        Map<String, List<EntitySpec<?>>> childRequests = MutableMap.of();
 
         for (Entry<String,NodeTemplate> templateE: topo.getNodeTemplates().entrySet()) {
             String templateId = templateE.getKey();
@@ -237,19 +240,35 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
                 }
 
                 if (hostNodeId!=null) {
-                    EntitySpec<?> parent = topLevelNodeSpecs.get(hostNodeId);
-                    if (parent!=null) {
-                        parent.child(thisNode);
-                        parent.configure(SoftwareProcess.CHILDREN_STARTABLE_MODE, ChildStartableMode.BACKGROUND_LATE);
-                    } else {
-                        throw new IllegalStateException("Can't find parent '"+hostNodeId+"'");
+                    //EntitySpec<?> parent = topLevelNodeSpecs.get(hostNodeId);
+                    //if (parent!=null) {
+                    //    parent.child(thisNode);
+                    //    parent.configure(SoftwareProcess.CHILDREN_STARTABLE_MODE, ChildStartableMode.BACKGROUND_LATE);
+                    //} else {
+                    //    throw new IllegalStateException("Can't find parent '"+hostNodeId+"'");
+                    //}
+                    if(!childRequests.containsKey(hostNodeId)){
+                        childRequests.put(hostNodeId, MutableList.<EntitySpec<?>>of());
                     }
+                    childRequests.get(hostNodeId).add(thisNode);
+
                 } else {
                     // temporarily, if no host relationship, treat as top-level (assume derived from compute, but note children can't be on it)
                     topLevelNodeSpecs.put(templateId, thisNode);
                 }
                 allNodeSpecs.put(templateId, thisNode);
             }
+        }
+
+        //process child request
+        for(Map.Entry<String, List<EntitySpec<?>>> entry : childRequests.entrySet()){
+            String parentId= entry.getKey();
+            EntitySpec<?> parent = topLevelNodeSpecs.get(parentId);
+            for(EntitySpec<?> child: entry.getValue()){
+                parent.child(child);
+                parent.configure(SoftwareProcess.CHILDREN_STARTABLE_MODE, ChildStartableMode.BACKGROUND_LATE);
+            }
+
         }
 
         result.children(topLevelNodeSpecs.values());
