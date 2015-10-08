@@ -6,11 +6,13 @@ import org.apache.brooklyn.api.entity.EntitySpec;
 import org.apache.brooklyn.api.location.Location;
 import org.apache.brooklyn.api.location.LocationDefinition;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
+import org.apache.brooklyn.core.entity.trait.Startable;
 import org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess;
 import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.exceptions.Exceptions;
 import org.apache.brooklyn.util.guava.Maybe;
 import org.apache.brooklyn.util.text.Strings;
+import org.apache.brooklyn.util.time.Duration;
 
 import java.util.Map;
 
@@ -34,6 +36,7 @@ public class ToscaComputeLocToVanillaConverter extends ToscaComputeToVanillaConv
         String locationString = resolve(t.getProperties(), "location");
         Location specLocation = resolveLocationFromString(locationString);
         spec.location(specLocation);
+        spec.configure(VanillaSoftwareProcess.START_TIMEOUT, Duration.PRACTICALLY_FOREVER);
 
         return spec;
     }

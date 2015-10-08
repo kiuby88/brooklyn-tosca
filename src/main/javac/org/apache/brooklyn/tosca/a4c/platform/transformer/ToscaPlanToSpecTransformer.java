@@ -12,6 +12,7 @@ import org.apache.brooklyn.api.internal.AbstractBrooklynObjectSpec;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
 import org.apache.brooklyn.config.ConfigKey;
 import org.apache.brooklyn.core.config.ConfigKeys;
+import org.apache.brooklyn.core.mgmt.EntityManagementUtils;
 import org.apache.brooklyn.core.mgmt.internal.LocalManagementContext;
 import org.apache.brooklyn.core.plan.PlanNotRecognizedException;
 import org.apache.brooklyn.core.plan.PlanToSpecTransformer;
@@ -177,6 +178,8 @@ public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
         // TODO we should support Relationships and have an OtherEntityMachineLocation ?
 
         EntitySpec<BasicApplication> result = EntitySpec.create(BasicApplication.class);
+        result.configure(EntityManagementUtils.WRAPPER_APP_MARKER, Boolean.TRUE);
+
 
         result.displayName(name);
 

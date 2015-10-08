@@ -44,7 +44,7 @@ public class ToscaTomcatServerConverter {
         //}
 
         spec.configure(TomcatServer.ROOT_WAR, resolveScalarProperty(t.getProperties(), "wars.root"));
-        spec.configure(TomcatServer.NAMED_WARS, resolveListProperty(t.getProperties(), "wars.named"));
+        //spec.configure(TomcatServer.NAMED_WARS, resolveListProperty(t.getProperties(), "wars.named"));
         spec.configure(TomcatServer.HTTP_PORT, PortRanges.fromString(resolveScalarProperty(t.getProperties(), "http.port")));
 
 
