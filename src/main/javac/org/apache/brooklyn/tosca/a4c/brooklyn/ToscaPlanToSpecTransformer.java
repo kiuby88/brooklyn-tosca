@@ -1,10 +1,20 @@
 package org.apache.brooklyn.tosca.a4c.brooklyn;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import alien4cloud.application.ApplicationService;
+import alien4cloud.deployment.DeploymentTopologyService;
+import alien4cloud.model.components.Csar;
+import alien4cloud.model.deployment.DeploymentTopology;
+import alien4cloud.model.topology.AbstractPolicy;
+import alien4cloud.model.topology.GenericPolicy;
+import alien4cloud.model.topology.NodeGroup;
+import alien4cloud.model.topology.NodeTemplate;
+import alien4cloud.model.topology.RelationshipTemplate;
+import alien4cloud.model.topology.Requirement;
+import alien4cloud.model.topology.Topology;
+import alien4cloud.tosca.ArchiveUploadService;
+import alien4cloud.tosca.parser.ParsingErrorLevel;
+import alien4cloud.tosca.parser.ParsingResult;
+import alien4cloud.tosca.parser.impl.advanced.GroupPolicyParser;
 import org.apache.brooklyn.api.catalog.CatalogItem;
 import org.apache.brooklyn.api.entity.Application;
 import org.apache.brooklyn.api.entity.EntitySpec;
@@ -31,21 +41,10 @@ import org.apache.brooklyn.util.yaml.Yamls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alien4cloud.application.ApplicationService;
-import alien4cloud.deployment.DeploymentTopologyService;
-import alien4cloud.model.components.Csar;
-import alien4cloud.model.deployment.DeploymentTopology;
-import alien4cloud.model.topology.AbstractPolicy;
-import alien4cloud.model.topology.GenericPolicy;
-import alien4cloud.model.topology.NodeGroup;
-import alien4cloud.model.topology.NodeTemplate;
-import alien4cloud.model.topology.RelationshipTemplate;
-import alien4cloud.model.topology.Requirement;
-import alien4cloud.model.topology.Topology;
-import alien4cloud.tosca.ArchiveUploadService;
-import alien4cloud.tosca.parser.ParsingErrorLevel;
-import alien4cloud.tosca.parser.ParsingResult;
-import alien4cloud.tosca.parser.impl.advanced.GroupPolicyParser;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class ToscaPlanToSpecTransformer implements PlanToSpecTransformer {
 
