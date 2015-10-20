@@ -53,14 +53,9 @@ public class ToscaPlanToSpecTransformerTest extends Alien4CloudToscaTest {
                 "org.apache.brooklyn.entity.software.base.VanillaSoftwareProcess");
     }
 
-
-
-
-
-
     @Test
     @SuppressWarnings("unchecked")
-    public void testTomcat() {
+    public void testTomcatCustomType() {
         String templateUrl = getClasspathUrlForResource("templates/Tomcat-HostedOn-Compute-template.yaml");
 
         EntitySpec<? extends Application> app = transformer.createApplicationSpec(
