@@ -114,17 +114,21 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
         return result;
     }
 
-    private Object joinOldAndNewValues(Object oldValue, Object newValue) {
+    protected Object joinOldAndNewValues(Object oldValue, Object newValue) {
         if ((oldValue instanceof Map) && (newValue instanceof Map)) {
             return combineCurrentAndResolvedValueMaps((Map) oldValue, (Map) newValue);
         } else if ((oldValue instanceof List) && (newValue instanceof List)) {
             return combineCurrentAndResolvedValueList((List) oldValue, (List) newValue);
+        } else if ((oldValue instanceof String) && (newValue instanceof String)) {
+            return newValue;
         } else {
+            LOG.warn("Types of oldValue {} and newValue {} are not the same, so {} is not able " +
+                    "to join them. Then, new type will be returned ",
+                    new Object[]{oldValue, newValue, this});
             return newValue;
         }
     }
-
-
+    
     private Map combineCurrentAndResolvedValueMaps(Map currentValue, Map resolvedVaue) {
         currentValue.putAll(resolvedVaue);
         return currentValue;
