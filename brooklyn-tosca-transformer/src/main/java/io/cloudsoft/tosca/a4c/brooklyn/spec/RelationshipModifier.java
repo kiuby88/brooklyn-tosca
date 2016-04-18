@@ -70,9 +70,8 @@ public class RelationshipModifier extends ConfigKeyModifier {
                 joinPropertiesAndValueTypes(propertiesAndTypedValues, getToscaFacade().getPropertiesAndTypeValuesByRelationshipId(relationship.getSourceNodeId(), toscaApplication, relationship.getRelationshipId(), computeName));
             }
         }
-        configureConfigKeysSpec(entitySpec, ConfigBag.newInstance(propertiesAndTypedValues));
+        updateConfigKeySpec(entitySpec, ConfigBag.newInstance(propertiesAndTypedValues));
     }
-
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> joinPropertiesAndValueTypes(Map<String, Object> properties,

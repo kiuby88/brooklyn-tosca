@@ -29,45 +29,64 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
     }
 
     protected void configureConfigKeysSpec(EntitySpec spec, ConfigBag bag) {
+        configureConfigKeysSpec(spec, bag, false);
+    }
+
+    protected void updateConfigKeySpec(EntitySpec spec, ConfigBag bag) {
+        configureConfigKeysSpec(spec, bag, true);
+    }
+
+    protected void configureConfigKeysSpec(EntitySpec spec, ConfigBag bag, boolean joinWithOldValues) {
         Set<String> keyNamesUsed = new LinkedHashSet<>();
-        configureWithAllRecords(findAllFlagsAndConfigKeys(spec, bag), spec, keyNamesUsed);
+        configureWithAllRecords(findAllFlagsAndConfigKeys(spec, bag), spec, keyNamesUsed, joinWithOldValues);
         setUnusedKeysAsAnonymousKeys(spec, keyNamesUsed, bag);
     }
 
-    private void configureWithAllRecords(Collection<FlagUtils.FlagConfigKeyAndValueRecord> records, EntitySpec spec, Set<String> keyNamesUsed) {
+    private void configureWithAllRecords(Collection<FlagUtils.FlagConfigKeyAndValueRecord> records,
+                                         EntitySpec spec,
+                                         Set<String> keyNamesUsed,
+                                         boolean joinWithOldValues) {
+
         for (FlagUtils.FlagConfigKeyAndValueRecord r : records) {
             if (r.getFlagMaybeValue().isPresent()) {
-                configureWithResolvedFlag(r, spec, keyNamesUsed);
+                configureWithResolvedFlag(r, spec, keyNamesUsed, joinWithOldValues);
             }
             if (r.getConfigKeyMaybeValue().isPresent()) {
-                configureWithResolvedConfigKey(r, spec, keyNamesUsed);
+                configureWithResolvedConfigKey(r, spec, keyNamesUsed, joinWithOldValues);
             }
         }
     }
 
-    private void configureWithResolvedFlag(FlagUtils.FlagConfigKeyAndValueRecord r, EntitySpec spec, Set<String> keyNamesUsed) {
+    private void configureWithResolvedFlag(FlagUtils.FlagConfigKeyAndValueRecord r,
+                                           EntitySpec spec,
+                                           Set<String> keyNamesUsed,
+                                           boolean joinWithOldValues) {
         Optional<Object> resolvedValue = resolveValue(r.getFlagMaybeValue().get(), Optional.<TypeToken>absent());
-        Optional<Object> oldValue = findFlagValue(spec, r);
-
-        Optional<Object> joinedValues = joinOldAndNewSpecConfigValues(oldValue, resolvedValue);
-
-        if (joinedValues.isPresent()) {
-            spec.configure(r.getFlagName(), joinedValues.get());
+        if (joinWithOldValues) {
+            Optional<Object> oldValue = findFlagValue(spec, r);
+            resolvedValue = joinOldAndNewSpecConfigValues(oldValue, resolvedValue);
+        }
+        if (resolvedValue.isPresent()) {
+            spec.configure(r.getFlagName(), resolvedValue.get());
         }
         keyNamesUsed.add(r.getFlagName());
     }
 
 
-    private void configureWithResolvedConfigKey(FlagUtils.FlagConfigKeyAndValueRecord r, EntitySpec spec, Set<String> keyNamesUsed) {
+    private void configureWithResolvedConfigKey(FlagUtils.FlagConfigKeyAndValueRecord r,
+                                                EntitySpec spec,
+                                                Set<String> keyNamesUsed,
+                                                boolean joinWithOldValues) {
         try {
             Optional<Object> resolvedValue = resolveValue(r.getConfigKeyMaybeValue().get(),
                     Optional.<TypeToken>of(r.getConfigKey().getTypeToken()));
-            Optional<Object> oldValue = getConfigKeyValue(spec, r);
+            if (joinWithOldValues) {
+                Optional<Object> oldValue = getConfigKeyValue(spec, r);
+                resolvedValue = joinOldAndNewSpecConfigValues(oldValue, resolvedValue);
+            }
 
-            Optional<Object> joinedValues = joinOldAndNewSpecConfigValues(oldValue, resolvedValue);
-
-            if (joinedValues.isPresent()) {
-                spec.configure(r.getConfigKey(), joinedValues.get());
+            if (resolvedValue.isPresent()) {
+                spec.configure(r.getConfigKey(), resolvedValue.get());
             }
             // todo: Should this be in the if block?
             keyNamesUsed.add(r.getConfigKey().getName());
@@ -79,7 +98,7 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
     }
 
     private Optional<Object> joinOldAndNewSpecConfigValues(Optional<Object> oldValue,
-                                                             Optional<Object> newValue) {
+                                                           Optional<Object> newValue) {
         Optional<Object> result;
 
         if ((newValue.isPresent()) && (oldValue.isPresent())) {
@@ -125,7 +144,7 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
     }
 
     private Optional<Object> findFlagValue(EntitySpec spec,
-                                               FlagUtils.FlagConfigKeyAndValueRecord r) {
+                                           FlagUtils.FlagConfigKeyAndValueRecord r) {
         Object flagValue = spec.getFlags().get(r.getFlagName());
         return (flagValue == null)
                 ? Optional.absent()
