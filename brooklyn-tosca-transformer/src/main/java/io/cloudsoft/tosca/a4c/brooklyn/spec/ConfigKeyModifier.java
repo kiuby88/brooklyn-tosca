@@ -119,10 +119,8 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
             return combineCurrentAndResolvedValueMaps((Map) oldValue, (Map) newValue);
         } else if ((oldValue instanceof List) && (newValue instanceof List)) {
             return combineCurrentAndResolvedValueList((List) oldValue, (List) newValue);
-        } else if ((oldValue instanceof String) && (newValue instanceof String)) {
-            return newValue;
         } else {
-            LOG.warn("Types of oldValue {} and newValue {} are not the same, so {} is not able " +
+            LOG.debug("Types of oldValue {} and newValue {} are not the same, so {} is not able " +
                     "to join them. Then, new type will be returned ",
                     new Object[]{oldValue, newValue, this});
             return newValue;
@@ -141,18 +139,12 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
 
     private Optional<Object> getConfigKeyValue(EntitySpec spec,
                                                FlagUtils.FlagConfigKeyAndValueRecord r) {
-        Object configValue = spec.getConfig().get(r.getConfigKey());
-        return (configValue == null)
-                ? Optional.absent()
-                : Optional.of(configValue);
+        return Optional.fromNullable(spec.getConfig().get(r.getConfigKey()));
     }
 
     private Optional<Object> findFlagValue(EntitySpec spec,
                                            FlagUtils.FlagConfigKeyAndValueRecord r) {
-        Object flagValue = spec.getFlags().get(r.getFlagName());
-        return (flagValue == null)
-                ? Optional.absent()
-                : Optional.of(flagValue);
+        return Optional.fromNullable(spec.getFlags().get(r.getFlagName()));
     }
 
 
