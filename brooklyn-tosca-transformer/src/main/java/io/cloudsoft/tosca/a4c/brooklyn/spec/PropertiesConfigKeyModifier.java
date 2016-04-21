@@ -25,6 +25,6 @@ public class PropertiesConfigKeyModifier extends ConfigKeyModifier {
     public void apply(EntitySpec<?> entitySpec, String nodeId, ToscaApplication toscaApplication) {
         String computeName = toscaApplication.getNodeName(nodeId).or(String.valueOf(entitySpec.getFlags().get(ApplicationSpecsBuilder.TOSCA_TEMPLATE_ID)));
         Map<String, Object> templatePropertyObjects = getToscaFacade().getTemplatePropertyObjects(nodeId, toscaApplication, computeName);
-        configureConfigKeysSpec(entitySpec, ConfigBag.newInstance(templatePropertyObjects));
+        updateConfigKeySpec(entitySpec, ConfigBag.newInstance(templatePropertyObjects));
     }
 }
