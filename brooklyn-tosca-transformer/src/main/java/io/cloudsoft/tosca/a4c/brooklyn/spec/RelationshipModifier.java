@@ -71,7 +71,7 @@ public class RelationshipModifier extends ConfigKeyModifier {
                 joinPropertiesAndValueTypes(propertiesAndTypedValues, newPropertyValue);
             }
         }
-        updateConfigKeySpec(entitySpec, ConfigBag.newInstance(propertiesAndTypedValues));
+        configureConfigKeysSpec(entitySpec, ConfigBag.newInstance(propertiesAndTypedValues));
     }
 
     @SuppressWarnings("unchecked")
