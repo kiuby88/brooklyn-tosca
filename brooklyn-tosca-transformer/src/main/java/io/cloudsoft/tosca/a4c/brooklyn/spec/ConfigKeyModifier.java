@@ -8,6 +8,8 @@ import org.apache.brooklyn.api.entity.Entity;
 import org.apache.brooklyn.api.entity.EntitySpec;
 import org.apache.brooklyn.api.mgmt.ManagementContext;
 import org.apache.brooklyn.core.config.ConfigKeys;
+import org.apache.brooklyn.util.collections.MutableList;
+import org.apache.brooklyn.util.collections.MutableMap;
 import org.apache.brooklyn.util.collections.MutableSet;
 import org.apache.brooklyn.util.core.config.ConfigBag;
 import org.apache.brooklyn.util.core.flags.FlagUtils;
@@ -110,13 +112,13 @@ public abstract class ConfigKeyModifier extends AbstractSpecModifier {
     }
     
     private Map combineCurrentAndResolvedValueMaps(Map currentValue, Map resolvedVaue) {
-        currentValue.putAll(resolvedVaue);
-        return currentValue;
+        return MutableMap.copyOf(currentValue).add(resolvedVaue);
     }
 
     private List combineCurrentAndResolvedValueList(List currentValue, List resolvedVaue) {
-        currentValue.addAll(resolvedVaue);
-        return currentValue;
+        MutableList result = MutableList.copyOf(currentValue);
+        result.addAll(resolvedVaue);
+        return result;
     }
 
     private Optional<Object> getConfigKeyValue(EntitySpec spec,

@@ -82,7 +82,7 @@ public class RelationshipModifier extends ConfigKeyModifier {
             if (!properties.containsKey(newPropertyId)) {
                 properties.put(newPropertyId, newPropertyValue);
             } else {
-                joinOldAndNewValues(properties.get(newPropertyId), newPropertyValue);
+                properties.put(newPropertyId, joinOldAndNewValues(properties.get(newPropertyId), newPropertyValue));
             }
         }
         return properties;
